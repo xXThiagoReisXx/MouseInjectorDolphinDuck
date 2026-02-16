@@ -1,0 +1,14 @@
+gametitle=True Crime New York (SLUS-21106)
+
+[Mouse Injector - Disable cam auto center when with gun]
+patch=1,EE,2017BF64,extended,00000000
+author=Thiago
+
+[Mouse Injector - Disable aim lock]
+//vertical lock
+patch=1,EE,2016FF9C,extended,00000000
+
+//horizontal lock
+patch=1,EE,2016FF10,extended,00000000
+author=Thiago
+description=not fully implemented
