@@ -29,15 +29,15 @@
 #define RADIUS 0.7383f
 
 
-#define T25_CAM_Y -0x20 // offset from cambaseptr
-#define T25_CAM_X_a 0x60 // offset from cambaseptr
-#define T25_CAM_X_b 0x58 // offset from cambaseptr
-#define T25_CAM_X_a_1 0x40 // offset from cambaseptr
-#define T25_CAM_X_b_1 0x48 // offset from cambaseptr
+#define T25_CAM_Y -0x20 // offset from cambase
+#define T25_CAM_X_a 0x60 // offset from cambase
+#define T25_CAM_X_b 0x58 // offset from cambase
+#define T25_CAM_X_a_1 0x40 // offset from cambase
+#define T25_CAM_X_b_1 0x48 // offset from cambase
 
 
 #define T25_CAMBASE_SANITY_1_VALUE 0xE8B86100
-#define T25_CAMBASE_SANITY_1 -0x2C //offset from foundcambaseptr
+#define T25_CAMBASE_SANITY_1 -0x2C //offset from foundcambase
 
 #define T25_IS_PAUSED 0x70CF14
 

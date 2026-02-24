@@ -39,17 +39,17 @@
 #define TAU 6.2831853f
 
 //apparently static
-#define TCNY_CAMX 0x4FD908
-#define TCNY_CAMY 0x4FD904
+#define ON_FOOT_CAMX 0x4FD908
+#define ON_FOOT_CAMY 0x4FD904
 
-static uint8_t _Status(void);
-static void _Inject(void);
+static uint8_t TCNY_Status(void);
+static void TCNY_Inject(void);
 
 static const GAMEDRIVER GAMEDRIVER_INTERFACE =
 {
-	"True Crime New York",
-	_Status,
-	_Inject,
+	"True Crime: New York City",
+	TCNY_Status,
+	TCNY_Inject,
 	1, // 1000 Hz tickrate
 	0 // crosshair sway not supported for driver
 };
@@ -59,7 +59,7 @@ const GAMEDRIVER *GAME_PS2_TRUECRIMENY = &GAMEDRIVER_INTERFACE;
 //==========================================================================
 // Purpose: return 1 if game is detected
 //==========================================================================
-static uint8_t _Status(void)
+static uint8_t TCNY_Status(void)
 
 //0x4E4CEA 53 4C 55 53 2D 32 31 31 30 36 54 43 4E 59 43 - SLUS-21106TCNYC
 {
@@ -69,10 +69,10 @@ static uint8_t _Status(void)
 			PS2_MEM_ReadWord(0x4E4CF6) == 0x4E594300);
 }
 
-static void _Inject(void)
+static void TCNY_Inject(void)
 {
 		    
-	//disabling camY and camX auto level (didn't work via injector)
+	//disabling camY and camX auto level (didn't work via injector, made a patch instead)
 	//if (PS2_MEM_ReadUInt(0x0017BF64) == 0x44800000)
 		//PS2_MEM_WriteUInt(0x0017BF64, 0x00000000);
 	
@@ -83,16 +83,16 @@ static void _Inject(void)
 		
 	float looksensitivity = (float)sensitivity / 1000.f;
 	
-	float camX = PS2_MEM_ReadFloat(TCNY_CAMX);
+	float camX = PS2_MEM_ReadFloat(ON_FOOT_CAMX);
 	camX += (float)xmouse * looksensitivity;
 	while (camX > TAU)
 		camX -= TAU;
 	while (camX < -TAU)
 		camX += TAU;
-	PS2_MEM_WriteFloat(TCNY_CAMX, camX);
+	PS2_MEM_WriteFloat(ON_FOOT_CAMX, camX);
 	
-	float camY = PS2_MEM_ReadFloat(TCNY_CAMY);
+	float camY = PS2_MEM_ReadFloat(ON_FOOT_CAMY);
 	camY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity;
 	camY = ClampFloat(camY, -1.570796371f, 1.570796371f);
-	PS2_MEM_WriteFloat(TCNY_CAMY, camY);
+	PS2_MEM_WriteFloat(ON_FOOT_CAMY, camY);
 }

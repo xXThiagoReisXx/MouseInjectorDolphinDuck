@@ -36,10 +36,11 @@
 // -- auto-center addresses --
 #define T1_CAMY_AUTOCENTER 0x800536B8 // NOP instruction address
 #define T1_CAMY_AUTOCENTER_WATER 0x8005355C
-#define T1_CAMY_AUTOCENTER_MUPEN64 0x7FFE3AFA8436
 
 // -- sanity checks --
 #define T1_PAUSE_STATE 0x801196E8 // pause state check (1 = paused)
+
+#define T1_VERTICAL_SENSITIVITY 0x80119410
 
 
 
@@ -104,7 +105,8 @@ static void N64_T1_Inject(void)
 	// Write NOP instruction to disable camera autocenter
 	N64_MEM_WriteUInt(T1_CAMY_AUTOCENTER, 0x00000000);
 	N64_MEM_WriteUInt(T1_CAMY_AUTOCENTER_WATER, 0x00000000);
-	N64_MEM_WriteUInt(T1_CAMY_AUTOCENTER_MUPEN64, 0x00000000);
+	N64_MEM_WriteFloat(T1_VERTICAL_SENSITIVITY, 0.0000000);
+
 	
 	if(xmouse == 0 && ymouse == 0) // if mouse is idle
 		return;
@@ -124,10 +126,10 @@ static void N64_T1_Inject(void)
 	camX += (float)xmouse * looksensitivity / scale;
 	camY -= (float)ymouse * looksensitivity / scale;
 
-	if (camY > 1)
-		camY = 1;
-	if (camY < -1)
-		camY = -1;
+	if (camY > 1.570794106f)
+		camY = 1.570794106f;
+	if (camY < -1.361354589f)
+		camY = -1.361354589f;
 
 	// Write camera X back to base address + offset
 	N64_MEM_WriteFloat(camXBase + T1_CAMX, camX);

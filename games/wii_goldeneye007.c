@@ -32,21 +32,21 @@
 // offsets from playerBase
 #define GE_ONFOOT_PLAYER_SANITY_1 0x48
 #define GE_ONFOOT_PLAYER_SANITY_2 0x70
-// #define GE_ONFOOT_IS_ACTIONABLE 0x57C
+
 #define GE_ONFOOT_CAMY 0xC64
 #define GE_ONFOOT_FOV 0x71C
 
 #define GE_ONFOOT_CAMXBASE_POINTER 0x806EB698
 // offsets from camXBase
 #define GE_ONFOOT_CAMX 0xDC
-#define GE_ACTIONABLE_BASE_POINTER 0x5C
+//#define GE_ACTIONABLE_BASE_POINTER 0x5C
 // offset from isActionableBase
-#define GE_IS_VAULTING 0xB8D // byte
-#define GE_IS_NOT_SUBDUE 0xB8E // byte
+//#define GE_IS_VAULTING 0xB8D // byte
+//#define GE_IS_NOT_SUBDUE 0xB8E // byte
 
-#define GE_IS_BUSY 0x805C9560
+//#define GE_IS_BUSY 0x805C9560
 
-#define GE_ACTIONABLE 0x0000FFFF
+//#define GE_ACTIONABLE 0x0000FFFF
 
 static uint8_t WII_GE_Status(void);
 static uint8_t WII_GE_DetectPlayerBase(void);
@@ -107,20 +107,11 @@ static void WII_GE_Inject(void)
 	if(xmouse == 0 && ymouse == 0) // if mouse is idle
 		return;
 
-	if (MEM_ReadUInt(GE_IS_BUSY)) // pause, hint
-		return;
-
 	if (!WII_GE_DetectPlayerBase())
 		return;
 
 	uint32_t camXBase = MEM_ReadUInt(GE_ONFOOT_CAMXBASE_POINTER);
 	if (!camXBase)
-		return;
-	
-	uint32_t actionableBase = MEM_ReadUInt(camXBase + GE_ACTIONABLE_BASE_POINTER);
-	if (MEM_ReadUInt8(actionableBase + GE_IS_VAULTING))
-		return;
-	if (!MEM_ReadUInt8(actionableBase + GE_IS_NOT_SUBDUE))
 		return;
 	
 	const float looksensitivity = (float)sensitivity / 40.f;
