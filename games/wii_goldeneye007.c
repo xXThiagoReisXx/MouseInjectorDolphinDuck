@@ -35,6 +35,8 @@
 
 #define GE_ONFOOT_CAMY 0xC64
 #define GE_ONFOOT_FOV 0x71C
+#define GE_ONRAILS_CAMX 0xEE0
+#define GE_ONRAILS_CAMY 0xEDC
 
 #define GE_ONFOOT_CAMXBASE_POINTER 0x806EB698
 // offsets from camXBase
@@ -118,7 +120,11 @@ static void WII_GE_Inject(void)
 	float fov = MEM_ReadFloat(playerBase + GE_ONFOOT_FOV) / 49.f;
 
 	float camX = MEM_ReadFloat(camXBase + GE_ONFOOT_CAMX);
+	float railsCamX = MEM_ReadFloat(playerBase + GE_ONRAILS_CAMX);
+	float railsCamY = MEM_ReadFloat(playerBase + GE_ONRAILS_CAMY);
 	camX += (float)xmouse * looksensitivity / scale * fov;
+	railsCamX += (float)xmouse * looksensitivity / scale * fov;
+	railsCamY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
 	// while (camX >= TAU)
 	// 	camX -= TAU;
 	// while (camX < 0)
@@ -130,5 +136,7 @@ static void WII_GE_Inject(void)
 	camY = ClampFloat(camY, -0.7853981853f, 0.7853981853f);
 
 	MEM_WriteFloat(camXBase + GE_ONFOOT_CAMX, camX);
+	MEM_WriteFloat(playerBase + GE_ONRAILS_CAMX, railsCamX);
 	MEM_WriteFloat(playerBase + GE_ONFOOT_CAMY, camY);
+	MEM_WriteFloat(playerBase + GE_ONRAILS_CAMY, railsCamY);
 }
