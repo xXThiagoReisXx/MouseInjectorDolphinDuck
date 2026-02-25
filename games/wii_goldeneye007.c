@@ -29,9 +29,12 @@
 #define GE_ONFOOT_PLAYER_POINTER 0x805D43EC
 #define GE_ONFOOT_PLAYER_SANITY_1_VALUE 0x805733AC
 #define GE_ONFOOT_PLAYER_SANITY_2_VALUE 0x80587420
+
+
 // offsets from playerBase
 #define GE_ONFOOT_PLAYER_SANITY_1 0x48
 #define GE_ONFOOT_PLAYER_SANITY_2 0x70
+#define GE_ONRAILS_PLAYER_SANITY_1 0xED8
 
 #define GE_ONFOOT_CAMY 0xC64
 #define GE_ONFOOT_FOV 0x71C
@@ -49,6 +52,9 @@
 //#define GE_IS_BUSY 0x805C9560
 
 //#define GE_ACTIONABLE 0x0000FFFF
+
+#define GE_IS_PAUSED 0x806EB69C
+//#define GE_INFO_SCREEN 0x809AD664 // didnt work
 
 static uint8_t WII_GE_Status(void);
 static uint8_t WII_GE_DetectPlayerBase(void);
@@ -112,6 +118,12 @@ static void WII_GE_Inject(void)
 	if (!WII_GE_DetectPlayerBase())
 		return;
 
+	if (MEM_ReadUInt8(GE_IS_PAUSED) == 1)
+		return;
+
+	// if (MEM_ReadUInt8(GE_INFO_SCREEN) == 1)
+	// 	return;
+
 	uint32_t camXBase = MEM_ReadUInt(GE_ONFOOT_CAMXBASE_POINTER);
 	if (!camXBase)
 		return;
@@ -122,9 +134,19 @@ static void WII_GE_Inject(void)
 	float camX = MEM_ReadFloat(camXBase + GE_ONFOOT_CAMX);
 	float railsCamX = MEM_ReadFloat(playerBase + GE_ONRAILS_CAMX);
 	float railsCamY = MEM_ReadFloat(playerBase + GE_ONRAILS_CAMY);
+	
+	// Check if in rails mode
+	if (MEM_ReadUInt(playerBase + GE_ONRAILS_PLAYER_SANITY_1) == 0x3F800000) {
+		// Rails mode - only inject to rails camera
+		railsCamX += (float)xmouse * looksensitivity / scale * fov;
+		railsCamY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
+		MEM_WriteFloat(playerBase + GE_ONRAILS_CAMX, railsCamX);
+		MEM_WriteFloat(playerBase + GE_ONRAILS_CAMY, railsCamY);
+		return; // Skip on-foot injection
+	}
+	
+	// On-foot mode - only inject to on-foot camera
 	camX += (float)xmouse * looksensitivity / scale * fov;
-	railsCamX += (float)xmouse * looksensitivity / scale * fov;
-	railsCamY += (float)(invertpitch ? -ymouse : ymouse) * looksensitivity / scale;
 	// while (camX >= TAU)
 	// 	camX -= TAU;
 	// while (camX < 0)
@@ -136,7 +158,5 @@ static void WII_GE_Inject(void)
 	camY = ClampFloat(camY, -0.7853981853f, 0.7853981853f);
 
 	MEM_WriteFloat(camXBase + GE_ONFOOT_CAMX, camX);
-	MEM_WriteFloat(playerBase + GE_ONRAILS_CAMX, railsCamX);
 	MEM_WriteFloat(playerBase + GE_ONFOOT_CAMY, camY);
-	MEM_WriteFloat(playerBase + GE_ONRAILS_CAMY, railsCamY);
 }
