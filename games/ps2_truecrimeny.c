@@ -41,6 +41,16 @@
 //apparently static
 #define ON_FOOT_CAMX 0x4FD908
 #define ON_FOOT_CAMY 0x4FD904
+#define ON_FOOT_CAMX_1 0x501A70
+#define ON_FOOT_CAMX_2 0x501A78
+
+#define PRECISION_AIM 0x539778
+#define CAM_LOCK 0x4FD8E4
+
+//sanity checks
+#define IS_PAUSED 0x501B84
+//#define IN_VEHICLE 0x51B3B4
+
 
 static uint8_t TCNY_Status(void);
 static void TCNY_Inject(void);
@@ -71,7 +81,17 @@ static uint8_t TCNY_Status(void)
 
 static void TCNY_Inject(void)
 {
-		    
+	// don't inject when game is paused
+	if (PS2_MEM_ReadUInt(IS_PAUSED) == 1)
+		return;
+	
+	// Don't know what this is, but if its not 0, camera sometimes locks
+	PS2_MEM_WriteUInt(CAM_LOCK, 0);
+	
+	// don't inject when in vehicle
+	//if (PS2_MEM_ReadUInt(IN_VEHICLE) == ?)
+	//	return;
+	    
 	//disabling camY and camX auto level (didn't work via injector, made a patch instead)
 	//if (PS2_MEM_ReadUInt(0x0017BF64) == 0x44800000)
 		//PS2_MEM_WriteUInt(0x0017BF64, 0x00000000);
@@ -81,7 +101,11 @@ static void TCNY_Inject(void)
 		return;
 	
 		
-	float looksensitivity = (float)sensitivity / 1000.f;
+	float looksensitivity = (float)sensitivity / 1000.f * 0.15f;
+	
+	// Reduce sensitivity by 70% when precision aim is active
+	if (PS2_MEM_ReadUInt(PRECISION_AIM) == 1)
+		looksensitivity *= 0.3f;
 	
 	float camX = PS2_MEM_ReadFloat(ON_FOOT_CAMX);
 	camX += (float)xmouse * looksensitivity;

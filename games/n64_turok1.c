@@ -29,6 +29,8 @@
 // Turok 1 memory addresses
 #define T1_CAMX_CAMBASE 0x80100E64 // camera X base address
 #define T1_CAMY 0x80128BE0 // camera Y position (static address?)
+//#define T1_CAMY_1 0x80112C94
+//#define T1_CAMY_2 0x80119560
 
 // -- offsets from cambase --
 #define T1_CAMX 0x64 // camera X offset from cambase
@@ -122,6 +124,9 @@ static void N64_T1_Inject(void)
 	float camX = N64_MEM_ReadFloat(camXBase + T1_CAMX);
 	// Read camera Y from direct address
 	float camY = N64_MEM_ReadFloat(T1_CAMY);
+	//float camY_1 = N64_MEM_ReadFloat(T1_CAMY_1);
+	//float camY_2 = N64_MEM_ReadFloat(T1_CAMY_2);
+
 
 	camX += (float)xmouse * looksensitivity / scale;
 	camY -= (float)ymouse * looksensitivity / scale;
@@ -135,4 +140,6 @@ static void N64_T1_Inject(void)
 	N64_MEM_WriteFloat(camXBase + T1_CAMX, camX);
 	// Write camera Y back to direct address
 	N64_MEM_WriteFloat(T1_CAMY, camY);
+	//N64_MEM_WriteFloat(T1_CAMY_1, camY_1);
+	//N64_MEM_WriteFloat(T1_CAMY_2, camY_2);
 }
