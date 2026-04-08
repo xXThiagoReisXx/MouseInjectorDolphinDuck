@@ -1,0 +1,12 @@
+gametitle=True Crime New York (SLUS-21106)
+
+[Mouse Injector - Disable cam auto center]
+//with gun
+patch=1,EE,0017BF64,word,00000000
+//melee y
+patch=1,EE,00173E74,word,00000000
+//melee x
+patch=1,EE,00173EB0,word,00000000
+//when leaving vehicle
+patch=1,EE,00172A90,word,00000000
+author=Thiago
